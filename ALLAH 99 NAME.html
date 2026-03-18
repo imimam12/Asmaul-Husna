@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>আসমাউল হুসনা - ৯৯ নাম</title>
+
+<style>
+body{
+    margin:0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+    text-align:center;
+}
+h1{margin:15px;}
+.search{
+    width:90%; max-width:400px; padding:10px;
+    border-radius:20px; border:none; outline:none; font-size:16px;
+}
+.container{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:12px; padding:10px;
+}
+.card{
+    background:rgba(255,255,255,0.1);
+    border-radius:15px; padding:12px;
+    backdrop-filter: blur(10px);
+    transition:0.3s; cursor:pointer;
+    border:1px solid rgba(255,255,255,0.2);
+}
+.card:hover{transform:scale(1.05);}
+.card:active{transform:scale(0.92);}
+.ar{font-size:20px;}
+.count{margin-top:8px;font-size:14px;}
+.btn{
+    margin-top:6px; padding:6px 10px; border-radius:10px;
+    border:2px solid white; background:none; color:white; cursor:pointer; transition:0.3s;
+}
+.btn:hover{background:white;color:black;}
+.btn:active{transform:scale(0.9);}
+.modal{
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.7); display:none; justify-content:center; align-items:center;
+}
+.modal-content{
+    background:#1e3c50; padding:20px; border-radius:15px; width:90%; max-width:400px;
+}
+.close-btn{
+    margin-top:10px; padding:10px; border-radius:10px; border:2px solid white;
+    background:none; color:white; cursor:pointer; transition:0.3s;
+}
+.close-btn:hover{background:white;color:black;}
+</style>
+</head>
+
+<body>
+
+<h1>আসমাউল হুসনা (৯৯ নাম)</h1>
+<input class="search" placeholder="নাম খুঁজুন..." onkeyup="search(this.value)">
+<div class="container" id="box"></div>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <h2 id="mName"></h2>
+        <p id="mMeaning"></p>
+        <p id="mFazilat"></p>
+        <p id="mCountRec"></p>
+        <button class="close-btn" onclick="closeModal()">বন্ধ করুন</button>
+    </div>
+</div>
+
+<script>
+// ৯৯ নাম + অর্থ + সাধারণ ফজিলত
+const names = [
+["الرَّحْمَٰنُ","Ar-Rahman","পরম দয়ালু"],
+["الرَّحِيمُ","Ar-Rahim","অতি দয়ালু"],
+["الْمَلِكُ","Al-Malik","সর্বময় অধিপতি"],
+["الْقُدُّوسُ","Al-Quddus","পবিত্র"],
+["السَّلَامُ","As-Salam","শান্তির উৎস"],
+["الْمُؤْمِنُ","Al-Mu’min","নিরাপত্তা দানকারী"],
+["الْمُهَيْمِنُ","Al-Muhaymin","রক্ষক"],
+["الْعَزِيزُ","Al-Aziz","পরাক্রমশালী"],
+["الْجَبَّارُ","Al-Jabbar","শক্তিশালী"],
+["الْمُتَكَبِّرُ","Al-Mutakabbir","মহান"],
+
+["الْخَالِقُ","Al-Khaliq","সৃষ্টিকর্তা"],
+["الْبَارِئُ","Al-Bari","সৃষ্টিকারী"],
+["الْمُصَوِّرُ","Al-Musawwir","আকৃতি দানকারী"],
+["الْغَفَّارُ","Al-Ghaffar","ক্ষমাশীল"],
+["الْقَهَّارُ","Al-Qahhar","দমনকারী"],
+["الْوَهَّابُ","Al-Wahhab","দানশীল"],
+["الرَّزَّاقُ","Ar-Razzaq","রিযিকদাতা"],
+["الْفَتَّاحُ","Al-Fattah","বিজয়দানকারী"],
+["الْعَلِيمُ","Al-Alim","সর্বজ্ঞ"],
+["الْقَابِضُ","Al-Qabid","সংকোচকারী"],
+
+["الْبَاسِطُ","Al-Basit","প্রশস্তকারী"],
+["الْخَافِضُ","Al-Khafid","অবনতকারী"],
+["الرَّافِعُ","Ar-Rafi","উন্নতকারী"],
+["الْمُعِزُّ","Al-Mu’izz","সম্মানদাতা"],
+["الْمُذِلُّ","Al-Mudhill","অপমানকারী"],
+["السَّمِيعُ","As-Sami","সর্বশ্রোতা"],
+["الْبَصِيرُ","Al-Basir","সর্বদ্রষ্টা"],
+["الْحَكَمُ","Al-Hakam","বিচারক"],
+["الْعَدْلُ","Al-Adl","ন্যায়পরায়ণ"],
+["اللَّطِيفُ","Al-Latif","সূক্ষ্ম দয়ালু"],
+
+["الْخَبِيرُ","Al-Khabir","খবরদার"],
+["الْحَلِيمُ","Al-Halim","সহনশীল"],
+["الْعَظِيمُ","Al-Azim","মহান"],
+["الْغَفُورُ","Al-Ghafur","ক্ষমাকারী"],
+["الشَّكُورُ","Ash-Shakur","কৃতজ্ঞতা গ্রহণকারী"],
+["الْعَلِيُّ","Al-Aliyy","সর্বোচ্চ"],
+["الْكَبِيرُ","Al-Kabir","মহান"],
+["الْحَفِيظُ","Al-Hafiz","সংরক্ষণকারী"],
+["الْمُقِيتُ","Al-Muqit","রিযিক রক্ষক"],
+["الْحَسِيبُ","Al-Hasib","হিসাবকারী"],
+
+["الْجَلِيلُ","Al-Jalil","মহিমান্বিত"],
+["الْكَرِيمُ","Al-Karim","মহান দয়ালু"],
+["الرَّقِيبُ","Ar-Raqib","পর্যবেক্ষক"],
+["الْمُجِيبُ","Al-Mujib","দোয়া কবুলকারী"],
+["الْوَاسِعُ","Al-Wasi","অসীম"],
+["الْحَكِيمُ","Al-Hakim","প্রজ্ঞাময়"],
+["الْوَدُودُ","Al-Wadud","ভালোবাসার"],
+["الْمَجِيدُ","Al-Majid","সম্মানিত"],
+["الْبَاعِثُ","Al-Baith","পুনরুত্থানকারী"],
+["الشَّهِيدُ","Ash-Shahid","সাক্ষী"],
+
+["الْحَقُّ","Al-Haqq","সত্য"],
+["الْوَكِيلُ","Al-Wakil","ভরসাস্থল"],
+["الْقَوِيُّ","Al-Qawiyy","শক্তিশালী"],
+["الْمَتِينُ","Al-Matin","দৃঢ়"],
+["الْوَلِيُّ","Al-Waliyy","অভিভাবক"],
+["الْحَمِيدُ","Al-Hamid","প্রশংসিত"],
+["الْمُحْصِي","Al-Muhsi","গণনাকারী"],
+["الْمُبْدِئُ","Al-Mubdi","শুরু করেন"],
+["الْمُعِيدُ","Al-Muid","পুনরায় ফিরান"],
+["الْمُحْيِي","Al-Muhyi","জীবনদাতা"],
+
+["الْمُمِيتُ","Al-Mumit","মৃত্যুদাতা"],
+["الْحَيُّ","Al-Hayy","চিরঞ্জীব"],
+["الْقَيُّومُ","Al-Qayyum","স্থায়ী রক্ষক"],
+["الْوَاجِدُ","Al-Wajid","সবকিছু পান"],
+["الْمَاجِدُ","Al-Majid","মহিমান্বিত"],
+["الْوَاحِدُ","Al-Wahid","এক"],
+["الْأَحَدُ","Al-Ahad","অদ্বিতীয়"],
+["الصَّمَدُ","As-Samad","অমুখাপেক্ষী"],
+["الْقَادِرُ","Al-Qadir","সর্বশক্তিমান"],
+["الْمُقْتَدِرُ","Al-Muqtadir","ক্ষমতাবান"],
+
+["الْمُقَدِّمُ","Al-Muqaddim","অগ্রগামী"],
+["الْمُؤَخِّرُ","Al-Muakhkhir","পিছিয়ে দেন"],
+["الْأَوَّلُ","Al-Awwal","প্রথম"],
+["الْآخِرُ","Al-Akhir","শেষ"],
+["الظَّاهِرُ","Az-Zahir","প্রকাশ্য"],
+["الْبَاطِنُ","Al-Batin","গোপন"],
+["الْوَالِي","Al-Wali","অভিভাবক"],
+["الْمُتَعَالِي","Al-Mutaali","সর্বোচ্চ"],
+["الْبَرُّ","Al-Barr","দয়ালু"],
+["التَّوَّابُ","At-Tawwab","তাওবা কবুলকারী"],
+
+["الْمُنْتَقِمُ","Al-Muntaqim","প্রতিশোধকারী"],
+["الْعَفُوُّ","Al-Afuw","ক্ষমাকারী"],
+["الرَّؤُوفُ","Ar-Ra'uf","দয়ালু"],
+["مَالِكُ الْمُلْكِ","Malik-ul-Mulk","রাজ্যের মালিক"],
+["ذُوالْجَلَالِ وَالْإِكْرَامِ","Zul-Jalali Wal-Ikram","মহিমান্বিত"],
+["الْمُقْسِطُ","Al-Muqsit","ন্যায়পরায়ণ"],
+["الْجَامِعُ","Al-Jami","একত্রকারী"],
+["الْغَنِيُّ","Al-Ghani","অমুখাপেক্ষী"],
+["الْمُغْنِي","Al-Mughni","ধনী করেন"],
+["الْمَانِعُ","Al-Mani","বাধা প্রদানকারী"],
+
+["الضَّارَّ","Ad-Darr","ক্ষতি করেন"],
+["النَّافِعُ","An-Nafi","উপকারকারী"],
+["النُّورُ","An-Nur","আলো"],
+["الْهَادِي","Al-Hadi","পথপ্রদর্শক"],
+["الْبَدِيعُ","Al-Badi","অনন্য সৃষ্টিকর্তা"],
+["الْبَاقِي","Al-Baqi","চিরস্থায়ী"],
+["الْوَارِثُ","Al-Warith","উত্তরাধিকারী"],
+["الرَّشِيدُ","Ar-Rashid","সঠিক পথপ্রদর্শক"],
+["الصَّبُورُ","As-Sabur","ধৈর্যশীল"]
+];
+
+// কাউন্টার
+let counts=new Array(names.length).fill(0);
+
+function render(data){
+    let html="";
+    data.forEach((n,i)=>{
+        html+=`
+        <div class="card" onclick="show(${i})">
+            <div class="ar">${n[0]}</div>
+            <div>${n[1]}</div>
+            <div>${n[2]}</div>
+            <div class="count">Count: ${counts[i]}</div>
+            <button class="btn" onclick="add(${i});event.stopPropagation()">+1</button>
+            <button class="btn" onclick="reset(${i});event.stopPropagation()">Reset</button>
+        </div>`;
+    });
+    document.getElementById("box").innerHTML=html;
+}
+
+function add(i){counts[i]++;render(names);}
+function reset(i){counts[i]=0;render(names);}
+
+function show(i){
+    document.getElementById("modal").style.display="flex";
+    document.getElementById("mName").innerText=names[i][0]+" ("+names[i][1]+")";
+    document.getElementById("mMeaning").innerText="অর্থ: "+names[i][2];
+    document.getElementById("mFazilat").innerText="ফজিলত: "+names[i][3];
+    document.getElementById("mCountRec").innerText="Recommended Count: "+names[i][4];
+}
+
+function closeModal(){document.getElementById("modal").style.display="none";}
+
+function search(val){
+    val=val.toLowerCase();
+    let filtered=names.filter(n=>n[1].toLowerCase().includes(val)||n[2].includes(val));
+    render(filtered);
+}
+
+render(names);
+</script>
+
+</body>
+</html>
